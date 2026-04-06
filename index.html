@@ -7,26 +7,111 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 20px; background: #f6f7fb; color: #0f172a; }
-    .container { max-width: 1200px; margin: 0 auto; }
-    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
-    h1 { font-size: 20px; margin: 0; }
-    .controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-    select, button { padding: 8px; border-radius: 8px; border: 1px solid #d1d5db; background: white; cursor: pointer; }
-    button:hover { background: #f3f4f6; }
-    .kpis { display: flex; gap: 12px; margin: 18px 0; }
-    .kpi { background: white; padding: 14px; border-radius: 10px; flex: 1; box-shadow: 0 6px 18px rgba(12,18,39,0.06); }
-    .kpi h3 { margin: 0; font-size: 12px; color: #6b7280; }
-    .kpi p { margin: 8px 0 0; font-size: 18px; font-weight: 700; }
-    .charts { display: grid; grid-template-columns: 1fr 420px; gap: 16px; }
-    .card { background: white; padding: 14px; border-radius: 10px; box-shadow: 0 6px 18px rgba(12,18,39,0.06); }
-    .small-cards { display: grid; grid-template-rows: 1fr 1fr; gap: 12px; }
-    #tableWrap { margin-top: 12px; overflow: auto; max-height: 320px; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    th, td { padding: 8px; border-bottom: 1px solid #e6e6e6; text-align: left; }
-    th { position: sticky; top: 0; background: white; }
-    footer { margin-top: 20px; font-size: 12px; color: #6b7280; text-align: center; }
-    @media(max-width:920px){ 
+    body {
+      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin: 20px;
+      background: #f6f7fb;
+      color: #0f172a;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    select, button {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      background: white;
+      font-family: inherit;
+    }
+    button {
+      cursor: pointer;
+      background: #e2e8f0;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #cbd5e1;
+    }
+    .kpis {
+      display: flex;
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .kpi {
+      background: white;
+      padding: 14px;
+      border-radius: 10px;
+      flex: 1;
+      box-shadow: 0 6px 18px rgba(12,18,39,0.06);
+    }
+    .kpi h3 {
+      margin: 0;
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .kpi p {
+      margin: 8px 0 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .charts {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 16px;
+    }
+    .card {
+      background: white;
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(12,18,39,0.06);
+    }
+    #tableWrap {
+      margin-top: 12px;
+      overflow: auto;
+      max-height: 320px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #e6e6e6;
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #6b7280;
+      text-align: center;
+      padding-bottom: 20px;
+    }
+    @media(max-width:920px) { 
       .charts { grid-template-columns: 1fr; } 
       .controls { flex-direction: column; align-items: stretch; } 
       .kpis { flex-direction: column; } 
@@ -88,7 +173,7 @@
     <div style="height:12px"></div>
 
     <div class="card">
-      <h3 style="margin-top:0; color: #374151; font-size: 16px;">Tabela de Dados (filtrada)</h3>
+      <h3 style="margin-top:0">Tabela de Dados (filtrada)</h3>
       <div id="tableWrap"></div>
     </div>
 
@@ -98,6 +183,18 @@
 <script>
 // --- Dados embutidos (convertidos do texto fornecido) ---
 const rawData = [
+  // 06/04/2026
+  {date:"2026-04-06", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:942.52, totalMes:1195551.18, totalGeral:4959363.66},
+  {date:"2026-04-06", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:448440.59, totalMes:null, totalGeral:null},
+  {date:"2026-04-06", account:"C. CETAM", type:"CONTA CORRENTE", saldo:566316.20, totalMes:null, totalGeral:null},
+  {date:"2026-04-06", account:"C. FILIAL CARAJÁS", type:"CONTA CORRENTE", saldo:0, totalMes:null, totalGeral:null},
+  {date:"2026-04-06", account:"C. FILIAL BRASÍLIA", type:"CONTA CORRENTE", saldo:0, totalMes:null, totalGeral:null},
+  {date:"2026-04-06", account:"C. SAFRA", type:"CONTA CORRENTE", saldo:170102.55, totalMes:null, totalGeral:null},
+  {date:"2026-04-06", account:"C. WALLETZ MATRIZ", type:"CONTA CORRENTE", saldo:9391.27, totalMes:null, totalGeral:null},
+  {date:"2026-04-06", account:"C. WALLETZ - SJC", type:"CONTA CORRENTE", saldo:358.05, totalMes:null, totalGeral:null},
+  {date:"2026-04-06", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:3763812.48, totalGeral:null},
+  {date:"2026-04-06", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3763812.43, totalMes:null, totalGeral:null},
+
   // 30/03/2026
   {date:"2026-03-30", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:15727.33, totalMes:206693.31, totalGeral:5833505.79},
   {date:"2026-03-30", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:1398523.29, totalMes:null, totalGeral:null},
@@ -186,7 +283,7 @@ const rawData = [
   {date:"2025-11-30", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:0, totalMes:3637402.04, totalGeral:null},
   {date:"2025-11-30", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-11-30", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3637401.99, totalMes:null, totalGeral:null},
- 
+  
 // 31/10/2025
   {date:"2025-10-31", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:803.91, totalMes:3535142.47, totalGeral:7155390.57},
   {date:"2025-10-31", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:887804.19, totalMes:null, totalGeral:null},
@@ -329,7 +426,6 @@ const rawData = [
   {date:"2024-12-30", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:917734.43, totalMes:2037055.99, totalGeral:null},
   {date:"2024-12-30", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:107.67, totalMes:null, totalGeral:null},
   {date:"2024-12-30", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:1119213.89, totalMes:null, totalGeral:null},
-
 ];
 
 // --- Utilitários ---
@@ -344,14 +440,15 @@ const dateSelect = document.getElementById('dateSelect');
 const accountSelect = document.getElementById('accountSelect');
 const typeSelect = document.getElementById('typeSelect');
 
-// Pega datas únicas e ordena decrescente (mais recente primeiro)
+// Ordena datas da mais recente para a mais antiga (descendente)
 const uniqueDates = unique(rawData.map(r=>r.date)).sort((a,b)=> new Date(b) - new Date(a));
 uniqueDates.forEach(d=>{
   const opt = document.createElement('option');
   opt.value = d; 
-  // Usa timezone UTC para evitar problemas de fuso horário alterando a data local
-  const dt = new Date(d + 'T00:00:00Z');
-  opt.textContent = dt.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+  // Corrige problema de fuso horário adicionando T00:00:00 na conversão se necessário, 
+  // mas como o formato é yyyy-mm-dd, ajustamos para exibir corretamente a data local.
+  const [year, month, day] = d.split('-');
+  opt.textContent = `${day}/${month}/${year}`;
   dateSelect.appendChild(opt);
 });
 
@@ -372,10 +469,9 @@ function createCharts(){
     data:{ labels:[], datasets:[] },
     options:{
       responsive:true,
-      maintainAspectRatio: false,
       plugins:{
-          legend:{position:'bottom', labels: { boxWidth: 12 }},
-          title: { display: true, text: 'Evolução de Saldo por Data' }
+        legend:{position:'bottom'},
+        title: {display: true, text: 'Evolução do Saldo por Conta'}
       },
       interaction:{mode:'index', intersect:false},
       scales:{ y: { ticks: { callback: v => v.toLocaleString('pt-BR') } } }
@@ -388,25 +484,23 @@ function createCharts(){
     options:{
       indexAxis:'y',
       responsive:true,
-      maintainAspectRatio: false,
       plugins:{
-          legend:{display:false},
-          title: { display: true, text: 'Maiores Saldos (Data Selecionada)' }
+        legend:{display:false},
+        title: {display: true, text: 'Ranking de Contas (Data Selecionada)'}
       },
       scales:{ x: { ticks: { callback: v => v.toLocaleString('pt-BR') } } }
     }
   });
 
   pieChart = new Chart(ctxP, {
-    type:'doughnut', // Alterado para doughnut para um visual mais moderno
-    data:{ labels:[], datasets:[{data:[], backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']}] },
+    type:'doughnut',
+    data:{ labels:[], datasets:[{data:[], backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']}] },
     options:{ 
-        responsive:true, 
-        maintainAspectRatio: false,
-        plugins:{
-            legend:{position:'bottom'},
-            title: { display: true, text: 'Distribuição (Data Selecionada)' }
-        } 
+      responsive:true, 
+      plugins:{
+        legend:{position:'bottom'},
+        title: {display: true, text: 'Distribuição por Tipo/Conta'}
+      } 
     }
   });
 }
@@ -427,42 +521,44 @@ function filterData(){
 function updateKPIs(filtered){
   // Saldo selecionado = soma dos saldos do filtro
   const saldo = filtered.reduce((s,r)=> s + (Number(r.saldo)||0), 0);
-  // Total por mês: if any item has totalMes use it (they're provided per date for some rows)
+  // Total por mês: se houver totalMes no filtro, usamos
   const tm = (filtered.find(r=>r.totalMes != null) || {}).totalMes || null;
   const tg = (filtered.find(r=>r.totalGeral != null) || {}).totalGeral || null;
+  
   document.getElementById('kpiSaldo').textContent = fmtBR(saldo);
   document.getElementById('kpiTotalMes').textContent = fmtBR(tm);
   document.getElementById('kpiTotalGeral').textContent = fmtBR(tg);
 }
 
 function updateLineChart(){
+  // O gráfico de linha exibe o histórico da conta selecionada (ou todas)
   const selectedAccount = accountSelect.value;
   const accountsToShow = selectedAccount === "All" ? uniqueAccounts : [selectedAccount];
 
-  // Ordena as datas cronologicamente para o gráfico de linhas
-  const dates = [...uniqueDates].sort((a,b)=> new Date(a) - new Date(b)); 
-  lineChart.data.labels = dates.map(d=> {
-      const dt = new Date(d + 'T00:00:00Z');
-      return dt.toLocaleDateString('pt-BR', { timeZone: 'UTC', day: '2-digit', month: '2-digit' });
+  // Ordenar as datas de forma ascendente para o gráfico de linhas
+  const datesAsc = [...uniqueDates].sort((a,b) => new Date(a) - new Date(b));
+  
+  lineChart.data.labels = datesAsc.map(d => {
+    const [year, month, day] = d.split('-');
+    return `${day}/${month}`;
   });
 
   lineChart.data.datasets = accountsToShow.map((acct, idx) => {
-    const ds = dates.map(dt=>{
+    const ds = datesAsc.map(dt=>{
       const rec = rawData.find(r=>r.date===dt && r.account===acct);
       return rec ? (Number(rec.saldo)||0) : 0;
     });
     
-    // Cores aleatórias suaves para as linhas
-    const hue = idx * (360 / accountsToShow.length);
-    const color = `hsl(${hue}, 70%, 50%)`;
+    // Gerar cores consistentes para as linhas baseadas no índice
+    const hue = (idx * 137.508) % 360; 
 
     return {
       label: acct,
       data: ds,
-      borderColor: color,
-      backgroundColor: color,
+      borderColor: `hsl(${hue}, 70%, 50%)`,
+      backgroundColor: `hsl(${hue}, 70%, 50%, 0.5)`,
       borderWidth: 2,
-      tension: 0.3,
+      tension: 0.25,
       fill: false,
       pointRadius: 3
     };
@@ -475,8 +571,9 @@ function updateBarChart(){
   const date = dateSelect.value;
   const type = typeSelect.value;
   const filtered = rawData.filter(r=> r.date===date && (type==='All' || r.type===type));
-  const sorted = filtered.slice().sort((a,b)=> b.saldo - a.saldo).slice(0, 10); // Mostra Top 10 para evitar ficar muito denso
-  barChart.data.labels = sorted.map(s=> s.account.replace('C. ', '')); // Encurta os nomes para caber melhor
+  const sorted = filtered.slice().sort((a,b)=> b.saldo - a.saldo);
+  
+  barChart.data.labels = sorted.map(s=> s.account);
   barChart.data.datasets[0].data = sorted.map(s=> s.saldo);
   barChart.update();
 }
@@ -487,10 +584,12 @@ function updatePieChart(){
 
   let dataAgg = {};
   if(account === "All"){
+    // agregar por tipo se "Todas as contas"
     rawData.filter(r=> r.date===date).forEach(r=>{
       dataAgg[r.type] = (dataAgg[r.type] || 0) + (Number(r.saldo)||0);
     });
   } else {
+    // agregar por tipo para a conta selecionada
     rawData.filter(r=> r.date===date && r.account===account).forEach(r=>{
       dataAgg[r.type] = (dataAgg[r.type] || 0) + (Number(r.saldo)||0);
     });
@@ -504,21 +603,19 @@ function updatePieChart(){
 
 function renderTable(filtered){
   const wrap = document.getElementById('tableWrap');
-  if(filtered.length === 0){ wrap.innerHTML = "<p style='padding:12px;color:#6b7280'>Sem dados para os filtros selecionados.</p>"; return; }
-  let html = `<table><thead><tr><th>DATA</th><th>CONTA</th><th>TIPO DE CONTA</th><th style="text-align:right">SALDO (R$)</th><th style="text-align:right">TOTAL MÊS (R$)</th><th style="text-align:right">TOTAL GERAL (R$)</th></tr></thead><tbody>`;
+  if(filtered.length === 0){ wrap.innerHTML = "<p style='padding:10px;'>Sem dados para os filtros selecionados.</p>"; return; }
   
-  // Ordenar a tabela pelo saldo decrescente dentro do filtro
-  const sortedFiltered = [...filtered].sort((a,b)=> b.saldo - a.saldo);
+  let html = `<table><thead><tr><th>DATA</th><th>CONTA</th><th>TIPO DE CONTA</th><th style="text-align:right">SALDO (R$)</th><th style="text-align:right">TOTAL POR MÊS (R$)</th><th style="text-align:right">TOTAL GERAL (R$)</th></tr></thead><tbody>`;
   
-  sortedFiltered.forEach(r=>{
-    const dt = new Date(r.date + 'T00:00:00Z');
+  filtered.forEach(r=>{
+    const [year, month, day] = r.date.split('-');
     html += `<tr>
-      <td>${dt.toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</td>
+      <td>${day}/${month}/${year}</td>
       <td>${r.account}</td>
-      <td><span style="background:#e5e7eb;padding:2px 6px;border-radius:4px;font-size:11px">${r.type}</span></td>
-      <td style="text-align:right; font-weight: 600;">${fmtBR(r.saldo)}</td>
-      <td style="text-align:right; color: #6b7280">${fmtBR(r.totalMes)}</td>
-      <td style="text-align:right; color: #6b7280">${fmtBR(r.totalGeral)}</td>
+      <td>${r.type}</td>
+      <td style="text-align:right; font-weight:600">${fmtBR(r.saldo)}</td>
+      <td style="text-align:right; color:#6b7280">${fmtBR(r.totalMes)}</td>
+      <td style="text-align:right; color:#6b7280">${fmtBR(r.totalGeral)}</td>
     </tr>`;
   });
   html += `</tbody></table>`;
@@ -538,6 +635,7 @@ function refreshAll(){
 dateSelect.addEventListener('change', refreshAll);
 accountSelect.addEventListener('change', refreshAll);
 typeSelect.addEventListener('change', refreshAll);
+
 document.getElementById('resetBtn').addEventListener('click', ()=>{
   dateSelect.value = uniqueDates[0];
   accountSelect.value = "All";
@@ -547,7 +645,8 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
 
 // --- Inicialização ---
 createCharts();
-dateSelect.value = uniqueDates[0]; // Set data mais recente
+// set defaults (data mais recente)
+dateSelect.value = uniqueDates[0];
 typeSelect.value = "All";
 accountSelect.value = "All";
 refreshAll();
