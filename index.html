@@ -4,176 +4,301 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Dashboard de Saldo de Contas</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <!-- Fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
   <style>
-    body {
-      font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      margin: 20px;
-      background: #f6f7fb;
-      color: #0f172a;
+    :root {
+      --bg-color: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: var(--bg-color);
+      color: var(--text-main);
+    }
+
     .container {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
     }
+
+    /* Cabeçalho e Filtros */
     header {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
     }
+    
+    @media(min-width: 768px) {
+      header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
     h1 {
-      font-size: 20px;
+      font-size: 24px;
+      font-weight: 700;
       margin: 0;
+      letter-spacing: -0.025em;
     }
+
     .controls {
       display: flex;
       gap: 12px;
-      align-items: center;
+      align-items: flex-end;
       flex-wrap: wrap;
     }
-    select, button {
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      background: white;
-      font-family: inherit;
-    }
-    button {
-      cursor: pointer;
-      background: #e2e8f0;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: #cbd5e1;
-    }
-    .kpis {
+
+    .control-group {
       display: flex;
-      gap: 12px;
-      margin: 18px 0;
+      flex-direction: column;
+      gap: 4px;
     }
+
+    .control-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    select, button {
+      padding: 10px 14px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+      height: 42px; /* Alinha com os selects */
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Cards de KPI */
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
     .kpi {
-      background: white;
-      padding: 14px;
-      border-radius: 10px;
-      flex: 1;
-      box-shadow: 0 6px 18px rgba(12,18,39,0.06);
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
+
     .kpi h3 {
       margin: 0;
-      font-size: 12px;
-      color: #6b7280;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
     }
+
     .kpi p {
-      margin: 8px 0 0;
-      font-size: 18px;
+      margin: 0;
+      font-size: 24px;
       font-weight: 700;
+      color: var(--text-main);
     }
+
+    /* Gráficos */
     .charts {
       display: grid;
-      grid-template-columns: 1fr 420px;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    @media(min-width: 1024px) {
+      .charts {
+        grid-template-columns: 2fr 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card h3 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .side-charts {
+      display: flex;
+      flex-direction: column;
       gap: 16px;
     }
-    .card {
-      background: white;
-      padding: 14px;
-      border-radius: 10px;
-      box-shadow: 0 6px 18px rgba(12,18,39,0.06);
-    }
+
+    /* Tabela */
     #tableWrap {
-      margin-top: 12px;
-      overflow: auto;
-      max-height: 320px;
+      overflow-x: auto;
+      max-height: 400px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13px;
-    }
-    th, td {
-      padding: 10px 8px;
-      border-bottom: 1px solid #e6e6e6;
+      font-size: 14px;
       text-align: left;
     }
-    th {
-      background: #f8fafc;
+
+    thead th {
+      background: #f1f5f9;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--text-muted);
       position: sticky;
       top: 0;
-      z-index: 1;
+      z-index: 10;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
     }
+
+    tbody td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+    /* Footer */
     footer {
-      margin-top: 20px;
-      font-size: 12px;
-      color: #6b7280;
+      margin-top: 32px;
       text-align: center;
-      padding-bottom: 20px;
-    }
-    @media(max-width:920px) { 
-      .charts { grid-template-columns: 1fr; } 
-      .controls { flex-direction: column; align-items: stretch; } 
-      .kpis { flex-direction: column; } 
+      font-size: 13px;
+      color: var(--text-muted);
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>Dashboard de Saldo de Contas — 06/04/2026 ➜ 31/12/2024</h1>
+      <h1>Dashboard de Saldo de Contas</h1>
       <div class="controls">
-        <label>Data:
+        <div class="control-group">
+          <label for="dateSelect">Data</label>
           <select id="dateSelect"></select>
-        </label>
-        <label>Conta:
+        </div>
+        <div class="control-group">
+          <label for="accountSelect">Conta</label>
           <select id="accountSelect"><option value="All">Todas</option></select>
-        </label>
-        <label>Tipo de Conta:
+        </div>
+        <div class="control-group">
+          <label for="typeSelect">Tipo de Conta</label>
           <select id="typeSelect">
             <option value="All">Todos</option>
             <option value="CONTA CORRENTE">CONTA CORRENTE</option>
             <option value="CONTA INVESTIMENTO">CONTA INVESTIMENTO</option>
           </select>
-        </label>
-        <button id="resetBtn">Redefinir filtros</button>
+        </div>
+        <button id="resetBtn">Redefinir Filtros</button>
       </div>
     </header>
 
     <section class="kpis">
       <div class="kpi">
-        <h3>Saldo Selecionado (R$)</h3>
+        <h3>Saldo Selecionado</h3>
         <p id="kpiSaldo">R$ 0,00</p>
       </div>
       <div class="kpi">
-        <h3>Total por Mês (R$)</h3>
+        <h3>Total por Mês</h3>
         <p id="kpiTotalMes">R$ 0,00</p>
       </div>
       <div class="kpi">
-        <h3>Total Geral (R$)</h3>
+        <h3>Total Geral</h3>
         <p id="kpiTotalGeral">R$ 0,00</p>
       </div>
     </section>
 
     <div class="charts">
       <div class="card">
-        <canvas id="lineChart" height="220"></canvas>
+        <h3>Evolução do Saldo</h3>
+        <div style="position: relative; height: 100%; min-height: 300px;">
+          <canvas id="lineChart"></canvas>
+        </div>
       </div>
 
-      <div>
-        <div class="card" style="margin-bottom:12px">
-          <canvas id="barChart" height="200"></canvas>
+      <div class="side-charts">
+        <div class="card">
+          <h3>Ranking de Saldos</h3>
+          <div style="position: relative; height: 200px;">
+            <canvas id="barChart"></canvas>
+          </div>
         </div>
         <div class="card">
-          <canvas id="pieChart" height="200"></canvas>
+          <h3>Distribuição por Tipo/Conta</h3>
+          <div style="position: relative; height: 200px;">
+            <canvas id="pieChart"></canvas>
+          </div>
         </div>
       </div>
     </div>
 
-    <div style="height:12px"></div>
-
     <div class="card">
-      <h3 style="margin-top:0">Tabela de Dados (filtrada)</h3>
+      <h3>Detalhamento de Dados</h3>
       <div id="tableWrap"></div>
     </div>
 
@@ -183,18 +308,28 @@
 <script>
 // --- Dados embutidos (convertidos do texto fornecido) ---
 const rawData = [
+  // 13/04/2026
+  {date:"2026-04-13", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:942.52, totalMes:1203555.36, totalGeral:4999299.55},
+  {date:"2026-04-13", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:449021.34, totalMes:null, totalGeral:null},
+  {date:"2026-04-13", account:"C. CETAM", type:"CONTA CORRENTE", saldo:625252.43, totalMes:null, totalGeral:null},
+  {date:"2026-04-13", account:"C. FILIAL CARAJÁS", type:"CONTA CORRENTE", saldo:0, totalMes:null, totalGeral:null},
+  {date:"2026-04-13", account:"C. FILIAL BRASÍLIA", type:"CONTA CORRENTE", saldo:0, totalMes:null, totalGeral:null},
+  {date:"2026-04-13", account:"C. SAFRA", type:"CONTA CORRENTE", saldo:118589.75, totalMes:null, totalGeral:null},
+  {date:"2026-04-13", account:"C. WALLETZ MATRIZ", type:"CONTA CORRENTE", saldo:9391.27, totalMes:null, totalGeral:null},
+  {date:"2026-04-13", account:"C. WALLETZ - SJC", type:"CONTA CORRENTE", saldo:358.05, totalMes:null, totalGeral:null},
+  {date:"2026-04-13", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:3795744.19, totalGeral:null},
+  {date:"2026-04-13", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3795744.14, totalMes:null, totalGeral:null},
   // 06/04/2026
-  {date:"2026-04-06", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:942.52, totalMes:1195551.18, totalGeral:4959363.66},
+  {date:"2026-04-06", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:942.52, totalMes:1254447.82, totalGeral:5050192.01},
   {date:"2026-04-06", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:448440.59, totalMes:null, totalGeral:null},
-  {date:"2026-04-06", account:"C. CETAM", type:"CONTA CORRENTE", saldo:566316.20, totalMes:null, totalGeral:null},
+  {date:"2026-04-06", account:"C. CETAM", type:"CONTA CORRENTE", saldo:625212.84, totalMes:null, totalGeral:null},
   {date:"2026-04-06", account:"C. FILIAL CARAJÁS", type:"CONTA CORRENTE", saldo:0, totalMes:null, totalGeral:null},
   {date:"2026-04-06", account:"C. FILIAL BRASÍLIA", type:"CONTA CORRENTE", saldo:0, totalMes:null, totalGeral:null},
   {date:"2026-04-06", account:"C. SAFRA", type:"CONTA CORRENTE", saldo:170102.55, totalMes:null, totalGeral:null},
   {date:"2026-04-06", account:"C. WALLETZ MATRIZ", type:"CONTA CORRENTE", saldo:9391.27, totalMes:null, totalGeral:null},
   {date:"2026-04-06", account:"C. WALLETZ - SJC", type:"CONTA CORRENTE", saldo:358.05, totalMes:null, totalGeral:null},
-  {date:"2026-04-06", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:3763812.48, totalGeral:null},
-  {date:"2026-04-06", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3763812.43, totalMes:null, totalGeral:null},
-
+  {date:"2026-04-06", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:3795744.19, totalGeral:null},
+  {date:"2026-04-06", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3795744.14, totalMes:null, totalGeral:null},
   // 30/03/2026
   {date:"2026-03-30", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:15727.33, totalMes:206693.31, totalGeral:5833505.79},
   {date:"2026-03-30", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:1398523.29, totalMes:null, totalGeral:null},
@@ -206,7 +341,6 @@ const rawData = [
   {date:"2026-03-30", account:"C. WALLETZ - SJC", type:"CONTA CORRENTE", saldo:179.01, totalMes:null, totalGeral:null},
   {date:"2026-03-30", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:3763812.48, totalGeral:null},
   {date:"2026-03-30", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3763812.43, totalMes:null, totalGeral:null},
-
   // 27/03/2026
   {date:"2026-03-27", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:42463.06, totalMes:2096274.67, totalGeral:5860087.15},
   {date:"2026-03-27", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:1398369.01, totalMes:null, totalGeral:null},
@@ -218,7 +352,6 @@ const rawData = [
   {date:"2026-03-27", account:"C. WALLETZ - SJC", type:"CONTA CORRENTE", saldo:179.01, totalMes:null, totalGeral:null},
   {date:"2026-03-27", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:3763812.48, totalGeral:null},
   {date:"2026-03-27", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3763812.43, totalMes:null, totalGeral:null},
-
   // 25/03/2026
   {date:"2026-03-25", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:42463.06, totalMes:1347056.22, totalGeral:5110868.70},
   {date:"2026-03-25", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:648845.01, totalMes:null, totalGeral:null},
@@ -230,7 +363,6 @@ const rawData = [
   {date:"2026-03-25", account:"C. WALLETZ - SJC", type:"CONTA CORRENTE", saldo:179.01, totalMes:null, totalGeral:null},
   {date:"2026-03-25", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:3763812.48, totalGeral:null},
   {date:"2026-03-25", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3763812.43, totalMes:null, totalGeral:null},
-
   // 28/02/2026
   {date:"2026-02-28", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:1243.01, totalMes:736800.78, totalGeral:4500613.26},
   {date:"2026-02-28", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:90.25, totalMes:null, totalGeral:null},
@@ -243,7 +375,6 @@ const rawData = [
   {date:"2026-02-28", account:"C. WALLETZ - SJC", type:"CONTA CORRENTE", saldo:1199.01, totalMes:null, totalGeral:null},
   {date:"2026-02-28", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:3763812.48, totalGeral:null},
   {date:"2026-02-28", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3763812.43, totalMes:null, totalGeral:null},
-
   // 31/01/2026
   {date:"2026-01-31", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:15972.43, totalMes:1701933.89, totalGeral:5433863.86},
   {date:"2026-01-31", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:7536.07, totalMes:null, totalGeral:null},
@@ -257,7 +388,6 @@ const rawData = [
   {date:"2026-01-31", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:0, totalMes:3731929.97, totalGeral:null},
   {date:"2026-01-31", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2026-01-31", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3731929.82, totalMes:null, totalGeral:null},
-
   // 31/12/2025
   {date:"2025-12-31", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:73424.51, totalMes:3616785.44, totalGeral:7295059.77},
   {date:"2025-12-31", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:696545.27, totalMes:null, totalGeral:null},
@@ -270,7 +400,6 @@ const rawData = [
   {date:"2025-12-31", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:0, totalMes:3678274.38, totalGeral:null},
   {date:"2025-12-31", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-12-31", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3678274.33, totalMes:null, totalGeral:null},
-
   // 30/11/2025
   {date:"2025-11-30", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:124528.05, totalMes:2946763.16, totalGeral:6584165.20},
   {date:"2025-11-30", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:1003.35, totalMes:null, totalGeral:null},
@@ -283,8 +412,7 @@ const rawData = [
   {date:"2025-11-30", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:0, totalMes:3637402.04, totalGeral:null},
   {date:"2025-11-30", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-11-30", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3637401.99, totalMes:null, totalGeral:null},
-  
-// 31/10/2025
+  // 31/10/2025
   {date:"2025-10-31", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:803.91, totalMes:3535142.47, totalGeral:7155390.57},
   {date:"2025-10-31", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:887804.19, totalMes:null, totalGeral:null},
   {date:"2025-10-31", account:"C. CETAM", type:"CONTA CORRENTE", saldo:2585864.19, totalMes:null, totalGeral:null},
@@ -296,7 +424,6 @@ const rawData = [
   {date:"2025-10-31", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:0, totalMes:3620248.10, totalGeral:null},
   {date:"2025-10-31", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-10-31", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:3620248.05, totalMes:null, totalGeral:null},  
-
   // 30/09/2025
   {date:"2025-09-30", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:10114.04, totalMes:5624126.24, totalGeral:8212692.29},
   {date:"2025-09-30", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:2036497.06, totalMes:null, totalGeral:null},
@@ -309,8 +436,7 @@ const rawData = [
   {date:"2025-09-30", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:0, totalMes:null, totalGeral:2588566.05},
   {date:"2025-09-30", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-09-30", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:2588566.00, totalMes:null, totalGeral:null},
- 
- // 31/08/2025
+  // 31/08/2025
   {date:"2025-08-31", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:52361.87, totalMes:2143332.78, totalGeral:4602903.35},
   {date:"2025-08-31", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:4680.59, totalMes:null, totalGeral:null},
   {date:"2025-08-31", account:"C. CETAM", type:"CONTA CORRENTE", saldo:1561229.03, totalMes:null, totalGeral:null},
@@ -322,8 +448,7 @@ const rawData = [
   {date:"2025-08-31", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:0, totalMes:null, totalGeral:2459570.57},
   {date:"2025-08-31", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-08-31", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:2459570.52, totalMes:null, totalGeral:null},
-
- // 31/07/2025
+  // 31/07/2025
   {date:"2025-07-31", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:19205.28, totalMes:3310114.47, totalGeral:5493016.40},
   {date:"2025-07-31", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:873140.22, totalMes:null, totalGeral:null},
   {date:"2025-07-31", account:"C. CETAM", type:"CONTA CORRENTE", saldo:1873723.71, totalMes:null, totalGeral:null},
@@ -335,8 +460,7 @@ const rawData = [
   {date:"2025-07-31", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:979249.61, totalMes:2182901.93, totalGeral:null},
   {date:"2025-07-31", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-07-31", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:1203652.27, totalMes:null, totalGeral:null},
-
- // 30/06/2025
+  // 30/06/2025
   {date:"2025-06-30", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:9478.11, totalMes:3581619.77, totalGeral:5737058.48},
   {date:"2025-06-30", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:1252510.74, totalMes:null, totalGeral:null},
   {date:"2025-06-30", account:"C. CETAM", type:"CONTA CORRENTE", saldo:1903281.23, totalMes:null, totalGeral:null},
@@ -348,7 +472,6 @@ const rawData = [
   {date:"2025-06-30", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:967101.92, totalMes:2155438.71, totalGeral:null},
   {date:"2025-06-30", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-06-30", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:1188336.74, totalMes:null, totalGeral:null},
-
   // 31/05/2025
   {date:"2025-05-31", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:7311.13, totalMes:3133563.96, totalGeral:5265628.25},
   {date:"2025-05-31", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:919197.78, totalMes:null, totalGeral:null},
@@ -361,7 +484,6 @@ const rawData = [
   {date:"2025-05-31", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:956792.73, totalMes:2132064.29, totalGeral:null},
   {date:"2025-05-31", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-05-31", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:1175271.51, totalMes:null, totalGeral:null},
-
    // 30/04/2025
   {date:"2025-04-30", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:19391.59, totalMes:2660201.77, totalGeral:4786772.80},
   {date:"2025-04-30", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:1109410.40, totalMes:null, totalGeral:null},
@@ -374,7 +496,6 @@ const rawData = [
   {date:"2025-04-30", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:954346.51, totalMes:2126571.03, totalGeral:null},
   {date:"2025-04-30", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-04-30", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:1172224.47, totalMes:null, totalGeral:null},
-
 // 31/03/2025
   {date:"2025-03-31", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:9717.97, totalMes:1973089.17, totalGeral:4077894.57},
   {date:"2025-03-31", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:1210506.00, totalMes:null, totalGeral:null},
@@ -387,7 +508,6 @@ const rawData = [
   {date:"2025-03-31", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:944748.00, totalMes:2104805.40, totalGeral:null},
   {date:"2025-03-31", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-03-31", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:1160057.35, totalMes:null, totalGeral:null},
- 
   // 28/02/2025
   {date:"2025-02-28", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:16559.02, totalMes:1067228.61, totalGeral:3152054.95},
   {date:"2025-02-28", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:125639.15, totalMes:null, totalGeral:null},
@@ -400,7 +520,6 @@ const rawData = [
   {date:"2025-02-28", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:936017.09, totalMes:2084826.34, totalGeral:null},
   {date:"2025-02-28", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-02-28", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:1148809.20, totalMes:null, totalGeral:null},
-
   // 31/01/2025
   {date:"2025-01-31", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:72603.78, totalMes:1619898.41, totalGeral:3684346.48},
   {date:"2025-01-31", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:117510.72, totalMes:null, totalGeral:null},
@@ -413,7 +532,6 @@ const rawData = [
   {date:"2025-01-31", account:"C. MOVIMENTO", type:"CONTA INVESTIMENTO", saldo:927130.46, totalMes:2064448.07, totalGeral:null},
   {date:"2025-01-31", account:"C. DETRAN", type:"CONTA INVESTIMENTO", saldo:0.05, totalMes:null, totalGeral:null},
   {date:"2025-01-31", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:1137317.56, totalMes:null, totalGeral:null},
-
   // 30/12/2024
   {date:"2024-12-30", account:"C. MOVIMENTO", type:"CONTA CORRENTE", saldo:8233.17, totalMes:4030333.66, totalGeral:6067389.65},
   {date:"2024-12-30", account:"C. PRODAM", type:"CONTA CORRENTE", saldo:2151409.59, totalMes:null, totalGeral:null},
@@ -428,33 +546,46 @@ const rawData = [
   {date:"2024-12-30", account:"C. SAFRA", type:"CONTA INVESTIMENTO", saldo:1119213.89, totalMes:null, totalGeral:null},
 ];
 
+// --- Paleta de Cores ---
+const chartColors = [
+  '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', 
+  '#ec4899', '#06b6d4', '#14b8a6', '#f97316', '#6366f1',
+  '#84cc16', '#eab308'
+];
+
 // --- Utilitários ---
 function fmtBR(value){
   if(value === null || value === undefined) return "R$ 0,00";
   return value.toLocaleString('pt-BR',{style:'currency', currency:'BRL'});
 }
+
 function unique(arr){ return Array.from(new Set(arr)); }
+
+// Parse Date safe (evita fuso horário adiantando/atrasando dia)
+function parseDateSafe(dateString) {
+  return new Date(dateString + 'T00:00:00');
+}
 
 // --- Popula selects ---
 const dateSelect = document.getElementById('dateSelect');
 const accountSelect = document.getElementById('accountSelect');
 const typeSelect = document.getElementById('typeSelect');
 
-// Ordena datas da mais recente para a mais antiga (descendente)
-const uniqueDates = unique(rawData.map(r=>r.date)).sort((a,b)=> new Date(b) - new Date(a));
-uniqueDates.forEach(d=>{
+const uniqueDates = unique(rawData.map(r=>r.date)).sort((a,b)=> new Date(a) - new Date(b));
+// Popula dropdown de datas (inverso - mais nova primeiro visualmente)
+[...uniqueDates].reverse().forEach(d=>{
   const opt = document.createElement('option');
   opt.value = d; 
-  // Corrige problema de fuso horário adicionando T00:00:00 na conversão se necessário, 
-  // mas como o formato é yyyy-mm-dd, ajustamos para exibir corretamente a data local.
-  const [year, month, day] = d.split('-');
-  opt.textContent = `${day}/${month}/${year}`;
+  opt.textContent = parseDateSafe(d).toLocaleDateString('pt-BR');
   dateSelect.appendChild(opt);
 });
 
 const uniqueAccounts = unique(rawData.map(r=>r.account)).sort();
 uniqueAccounts.forEach(a=>{
-  const opt = document.createElement('option'); opt.value = a; opt.textContent = a; accountSelect.appendChild(opt);
+  const opt = document.createElement('option'); 
+  opt.value = a; 
+  opt.textContent = a; 
+  accountSelect.appendChild(opt);
 });
 
 // --- Charts setup ---
@@ -469,38 +600,34 @@ function createCharts(){
     data:{ labels:[], datasets:[] },
     options:{
       responsive:true,
+      maintainAspectRatio: false,
       plugins:{
-        legend:{position:'bottom'},
-        title: {display: true, text: 'Evolução do Saldo por Conta'}
+        legend:{position:'bottom', labels: { usePointStyle: true, boxWidth: 8 }}
       },
       interaction:{mode:'index', intersect:false},
-      scales:{ y: { ticks: { callback: v => v.toLocaleString('pt-BR') } } }
+      scales:{ y: { ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } } }
     }
   });
 
   barChart = new Chart(ctxB, {
     type:'bar',
-    data:{ labels:[], datasets:[{label:'Saldo (R$)', data:[], backgroundColor: '#3b82f6'}] },
+    data:{ labels:[], datasets:[{label:'Saldo (R$)', data:[], backgroundColor: chartColors}] },
     options:{
       indexAxis:'y',
       responsive:true,
-      plugins:{
-        legend:{display:false},
-        title: {display: true, text: 'Ranking de Contas (Data Selecionada)'}
-      },
+      maintainAspectRatio: false,
+      plugins:{legend:{display:false}},
       scales:{ x: { ticks: { callback: v => v.toLocaleString('pt-BR') } } }
     }
   });
 
   pieChart = new Chart(ctxP, {
-    type:'doughnut',
-    data:{ labels:[], datasets:[{data:[], backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']}] },
+    type:'doughnut', // Mudado para doughnut para um visual mais clean
+    data:{ labels:[], datasets:[{data:[], backgroundColor: chartColors, borderWidth: 0}] },
     options:{ 
       responsive:true, 
-      plugins:{
-        legend:{position:'bottom'},
-        title: {display: true, text: 'Distribuição por Tipo/Conta'}
-      } 
+      maintainAspectRatio: false,
+      plugins:{legend:{position:'bottom', labels: { usePointStyle: true, boxWidth: 8 }}} 
     }
   });
 }
@@ -519,9 +646,7 @@ function filterData(){
 }
 
 function updateKPIs(filtered){
-  // Saldo selecionado = soma dos saldos do filtro
   const saldo = filtered.reduce((s,r)=> s + (Number(r.saldo)||0), 0);
-  // Total por mês: se houver totalMes no filtro, usamos
   const tm = (filtered.find(r=>r.totalMes != null) || {}).totalMes || null;
   const tg = (filtered.find(r=>r.totalGeral != null) || {}).totalGeral || null;
   
@@ -531,39 +656,27 @@ function updateKPIs(filtered){
 }
 
 function updateLineChart(){
-  // O gráfico de linha exibe o histórico da conta selecionada (ou todas)
   const selectedAccount = accountSelect.value;
   const accountsToShow = selectedAccount === "All" ? uniqueAccounts : [selectedAccount];
-
-  // Ordenar as datas de forma ascendente para o gráfico de linhas
-  const datesAsc = [...uniqueDates].sort((a,b) => new Date(a) - new Date(b));
+  const dates = uniqueDates.slice(); 
   
-  lineChart.data.labels = datesAsc.map(d => {
-    const [year, month, day] = d.split('-');
-    return `${day}/${month}`;
-  });
-
+  lineChart.data.labels = dates.map(d=> parseDateSafe(d).toLocaleDateString('pt-BR'));
   lineChart.data.datasets = accountsToShow.map((acct, idx) => {
-    const ds = datesAsc.map(dt=>{
+    const ds = dates.map(dt=>{
       const rec = rawData.find(r=>r.date===dt && r.account===acct);
       return rec ? (Number(rec.saldo)||0) : 0;
     });
-    
-    // Gerar cores consistentes para as linhas baseadas no índice
-    const hue = (idx * 137.508) % 360; 
-
     return {
       label: acct,
       data: ds,
-      borderColor: `hsl(${hue}, 70%, 50%)`,
-      backgroundColor: `hsl(${hue}, 70%, 50%, 0.5)`,
+      borderColor: chartColors[idx % chartColors.length],
+      backgroundColor: chartColors[idx % chartColors.length],
       borderWidth: 2,
-      tension: 0.25,
-      fill: false,
-      pointRadius: 3
+      pointRadius: 3,
+      tension: 0.3, // Curvas mais suaves
+      fill: false
     };
   });
-
   lineChart.update();
 }
 
@@ -571,7 +684,7 @@ function updateBarChart(){
   const date = dateSelect.value;
   const type = typeSelect.value;
   const filtered = rawData.filter(r=> r.date===date && (type==='All' || r.type===type));
-  const sorted = filtered.slice().sort((a,b)=> b.saldo - a.saldo);
+  const sorted = filtered.slice().sort((a,b)=> b.saldo - a.saldo).slice(0, 8); // Top 8 para não amontoar
   
   barChart.data.labels = sorted.map(s=> s.account);
   barChart.data.datasets[0].data = sorted.map(s=> s.saldo);
@@ -584,12 +697,10 @@ function updatePieChart(){
 
   let dataAgg = {};
   if(account === "All"){
-    // agregar por tipo se "Todas as contas"
     rawData.filter(r=> r.date===date).forEach(r=>{
       dataAgg[r.type] = (dataAgg[r.type] || 0) + (Number(r.saldo)||0);
     });
   } else {
-    // agregar por tipo para a conta selecionada
     rawData.filter(r=> r.date===date && r.account===account).forEach(r=>{
       dataAgg[r.type] = (dataAgg[r.type] || 0) + (Number(r.saldo)||0);
     });
@@ -603,19 +714,28 @@ function updatePieChart(){
 
 function renderTable(filtered){
   const wrap = document.getElementById('tableWrap');
-  if(filtered.length === 0){ wrap.innerHTML = "<p style='padding:10px;'>Sem dados para os filtros selecionados.</p>"; return; }
+  if(filtered.length === 0){ 
+    wrap.innerHTML = "<p style='padding:16px'>Sem dados para os filtros selecionados.</p>"; 
+    return; 
+  }
   
-  let html = `<table><thead><tr><th>DATA</th><th>CONTA</th><th>TIPO DE CONTA</th><th style="text-align:right">SALDO (R$)</th><th style="text-align:right">TOTAL POR MÊS (R$)</th><th style="text-align:right">TOTAL GERAL (R$)</th></tr></thead><tbody>`;
+  let html = `<table><thead><tr>
+    <th>Data</th>
+    <th>Conta</th>
+    <th>Tipo de Conta</th>
+    <th style="text-align:right">Saldo</th>
+    <th style="text-align:right">Total/Mês</th>
+    <th style="text-align:right">Total Geral</th>
+  </tr></thead><tbody>`;
   
   filtered.forEach(r=>{
-    const [year, month, day] = r.date.split('-');
     html += `<tr>
-      <td>${day}/${month}/${year}</td>
-      <td>${r.account}</td>
-      <td>${r.type}</td>
-      <td style="text-align:right; font-weight:600">${fmtBR(r.saldo)}</td>
-      <td style="text-align:right; color:#6b7280">${fmtBR(r.totalMes)}</td>
-      <td style="text-align:right; color:#6b7280">${fmtBR(r.totalGeral)}</td>
+      <td>${parseDateSafe(r.date).toLocaleDateString('pt-BR')}</td>
+      <td style="font-weight: 500">${r.account}</td>
+      <td><span style="font-size: 12px; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">${r.type}</span></td>
+      <td style="text-align:right; font-weight: 500">${fmtBR(r.saldo)}</td>
+      <td style="text-align:right; color: #64748b">${fmtBR(r.totalMes)}</td>
+      <td style="text-align:right; color: #64748b">${fmtBR(r.totalGeral)}</td>
     </tr>`;
   });
   html += `</tbody></table>`;
@@ -637,7 +757,8 @@ accountSelect.addEventListener('change', refreshAll);
 typeSelect.addEventListener('change', refreshAll);
 
 document.getElementById('resetBtn').addEventListener('click', ()=>{
-  dateSelect.value = uniqueDates[0];
+  // Retorna para a data MAIS RECENTE
+  dateSelect.value = uniqueDates[uniqueDates.length - 1];
   accountSelect.value = "All";
   typeSelect.value = "All";
   refreshAll();
@@ -645,8 +766,9 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
 
 // --- Inicialização ---
 createCharts();
-// set defaults (data mais recente)
-dateSelect.value = uniqueDates[0];
+
+// Define defaults: A data MAIS RECENTE ao invés da mais antiga
+dateSelect.value = uniqueDates[uniqueDates.length - 1];
 typeSelect.value = "All";
 accountSelect.value = "All";
 refreshAll();
